@@ -1,0 +1,27 @@
+import pandas as pd
+import openpyxl
+import time
+
+def generate_xlsx():
+    time.sleep(4)
+    print("Generating documents...")
+    df = pd.read_csv(r"TAB SEPARATED VALUES FILEPATH PLACEHOLDER", sep='\t', skiprows=3)
+    df = df.iloc[:, 1:]
+
+    personnel = df["TARGET COLUMN PLACEHOLDER"].dropna().unique()
+
+    for person in personnel:
+        team_row = df[df['TARGET COLUMN PLACEHOLDER'] == person]
+        person_filename = fr"TARGET FILENAME PLACEHOLDER.xlsx"
+        team_row.to_excel(str(person_filename), index=False, sheet_name='Daily work orders')
+        wb = openpyxl.load_workbook(str(person_filename))
+        ws = wb['SHEET NAME PLACEHOLDER']
+        for col in ws.columns:
+            max_len = 0
+            for cell in col:
+                if cell.value:
+                    max_len = max(max_len, len(str(cell.value)))
+            col_letter = openpyxl.utils.get_column_letter(col[0].column)
+            ws.column_dimensions[col_letter].width = max(max_len + 4, 12)
+        wb.save(str(person_filename))
+        wb.close()
